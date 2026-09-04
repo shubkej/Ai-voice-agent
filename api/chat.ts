@@ -1,10 +1,10 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import {
   ADESH_SYSTEM_INSTRUCTION,
-  getGenAI,
   handleToolExecution,
   toolsConfig,
 } from '../server/apiApp';
+import { getGenAI } from '../server/gemini';
 
 type ChatRequest = {
   message?: string;
@@ -61,7 +61,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     ];
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents,
       config: {
         systemInstruction: ADESH_SYSTEM_INSTRUCTION,
@@ -94,6 +94,6 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     console.error('Chat function error:', message);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ error: 'Chat service failed', detail: message }));
+    res.end(JSON.stringify({ error: 'Failed to process chat request' }));
   }
 }

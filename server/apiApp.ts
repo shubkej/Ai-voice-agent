@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { GoogleGenAI, Type, FunctionDeclaration } from '@google/genai';
+import { Type, FunctionDeclaration } from '@google/genai';
+import { getGenAI } from './gemini';
 
 dotenv.config();
 
@@ -95,20 +96,6 @@ export const mockServices: StoredService[] = [
     createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
   },
 ];
-
-// Lazy GenAI initialization
-export function getGenAI(): GoogleGenAI | null {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
-  return new GoogleGenAI({
-    apiKey,
-    httpOptions: {
-      headers: {
-        'User-Agent': 'aistudio-build',
-      },
-    },
-  });
-}
 
 // System instruction matching Adesh at Ganesh Enterprises
 export const ADESH_SYSTEM_INSTRUCTION = `You are Adesh, the AI Sales & Technical Support Representative for Ganesh Enterprises, a trusted industrial supplier of heavy machinery, equipment, CNCs, and hardware tools.
@@ -364,7 +351,7 @@ router.post('/chat', async (req, res) => {
     ];
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents,
       config: {
         systemInstruction: ADESH_SYSTEM_INSTRUCTION,
@@ -398,7 +385,7 @@ router.post('/chat', async (req, res) => {
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : String(error);
     console.error('Chat API error:', errMsg);
-    res.status(500).json({ error: errMsg });
+    res.status(500).json({ error: 'Failed to process chat request' });
   }
 });
 
