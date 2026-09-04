@@ -363,33 +363,21 @@ router.post('/chat', async (req, res) => {
       },
     ];
 
-    let response;
-    try {
-      response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
-        contents,
-        config: {
-          systemInstruction: ADESH_SYSTEM_INSTRUCTION,
-          tools: [{ functionDeclarations: toolsConfig }],
-        },
-      });
-    } catch (modelErr: unknown) {
-      console.warn('gemini-3.6-flash fallback:', modelErr);
-      response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents,
-        config: {
-          systemInstruction: ADESH_SYSTEM_INSTRUCTION,
-          tools: [{ functionDeclarations: toolsConfig }],
-        },
-      });
-    }
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents,
+      config: {
+        systemInstruction: ADESH_SYSTEM_INSTRUCTION,
+        tools: [{ functionDeclarations: toolsConfig }],
+      },
+    });
 
     let replyText = response.text || '';
     let toolResultNotification: { tool: string; args: unknown; result: { success: boolean; message?: string } } | null = null;
 
     if (response.functionCalls && response.functionCalls.length > 0) {
       for (const fc of response.functionCalls) {
+        if (!fc.name) continue;
         const execution = handleToolExecution(fc.name, fc.args as Record<string, unknown>);
         toolResultNotification = {
           tool: fc.name,
