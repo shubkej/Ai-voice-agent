@@ -1,0 +1,6 @@
+{
+  "name": "Ganesh Enterprises Voice Agent",
+  "description": "Conversational AI voice assistant powered by Gemini Live for Adesh at Ganesh Enterprises - industrial machinery sales, demo trials, quotes, and service scheduling.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
